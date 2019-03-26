@@ -1,3 +1,5 @@
 import 'package:tetris/tetris.dart';
 
-void main() => Game().start();
+void main() {
+  Game().start();
+}

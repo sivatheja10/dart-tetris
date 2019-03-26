@@ -17,14 +17,11 @@ class Game {
 
   Game() {
     linesCleared = 0;
-    gameScore = Element.div()..id = "score";
 
+    gameScore = Element.div()..id = 'Score';
     rowState = List<int>.filled(height, 0);
-    boardState = List<int>(width)
-        .map(
-          (_) => List<int>.filled(height, 0),
-        )
-        .toList();
+    boardState =
+        List<int>(width).map((_) => List<int>.filled(height, 0).toList());
   }
 
   Block getRandomPiece() {
@@ -32,18 +29,25 @@ class Game {
     switch (randomInt) {
       case 0:
         return IBlock(width);
+        break;
       case 1:
         return OBlock(width);
+        break;
       case 2:
         return JBlock(width);
+        break;
       case 3:
         return TBlock(width);
+        break;
       case 4:
         return LBlock(width);
+        break;
       case 5:
         return ZBlock(width);
+        break;
       case 6:
         return SBlock(width);
+        break;
     }
     return Block();
   }
@@ -51,7 +55,6 @@ class Game {
   void clearRows() {
     for (int idx = 0; idx < rowState.length; idx++) {
       int row = rowState[idx];
-
       if (row == width) {
         ImageData imageData =
             ctx.getImageData(0, 0, cellSize * width, cellSize * idx);
@@ -63,22 +66,12 @@ class Game {
           }
           rowState[y] = rowState[y - 1];
         }
-
         rowState[0] = 0;
         boardState.forEach((c) => c[0] = 0);
         linesCleared++;
       }
     }
   }
-
-  //[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]
-  //[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,2,7,4,10]
-  //[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,2,7,4]
-
-  //      0        1        2        3
-  // [[0,0,0,0][0,0,0,0][0,0,0,0][0,0,0,0]]
-  // [[0,0,0,1][0,0,1,1][0,1,1,1][0,0,1,1]]
-  // [[0,0,0,0][0,0,0,1][0,0,1,1][0,0,0,1]]
 
   bool validMove() {
     for (Tile tile in currentBlock.tiles) {
@@ -95,16 +88,9 @@ class Game {
 
   bool pieceMoving(String s) {
     bool pieceIsMoving = true;
-
     ctx.fillStyle = 'grey';
-
     currentBlock.tiles.forEach((Tile tile) {
-      ctx.fillRect(
-        tile.x * cellSize,
-        tile.y * cellSize,
-        cellSize,
-        cellSize,
-      );
+      ctx.fillRect(tile.x * cellSize, tile.y * cellSize, cellSize, cellSize);
     });
 
     if (s == 'rotate') {
@@ -117,30 +103,18 @@ class Game {
       if (s == 'rotate') currentBlock.rotateLeft();
       if (s == 'left') currentBlock.move('right');
       if (s == 'right') currentBlock.move('left');
-      if (s == 'down') currentBlock.move('up');
       if (s == 'up') currentBlock.move('down');
+      if (s == 'down') currentBlock.move('up');
     }
-
     ctx.fillStyle = currentBlock.color;
-
     currentBlock.tiles.forEach((tile) {
-      ctx.fillRect(
-        tile.x * cellSize,
-        tile.y * cellSize,
-        cellSize,
-        cellSize,
-      );
+      ctx.fillRect(tile.x * cellSize, tile.y * cellSize, cellSize, cellSize);
     });
-
     return pieceIsMoving;
   }
 
   void updateGame(Timer timer) {
-    window.console.log(boardState);
-    window.console.log(rowState);
-    gameScore.setInnerHtml(
-      "<p>Score: ${linesCleared} Lines</p>",
-    );
+    gameScore.setInnerHtml("<p>Score: ${linesCleared} Lines<p>");
 
     if (!pieceMoving('down')) {
       currentBlock.tiles.forEach((t) {
@@ -148,6 +122,7 @@ class Game {
         rowState[t.y]++;
       });
       clearRows();
+
       currentBlock = getRandomPiece();
       if (!pieceMoving('down')) {
         timer.cancel();
@@ -159,8 +134,8 @@ class Game {
     board = Element.html('<canvas/>');
     board.width = width * cellSize;
     board.height = height * cellSize;
-    ctx = board.context2D;
 
+    ctx = board.context2D;
     ctx.fillStyle = 'grey';
     ctx.fillRect(0, 0, board.width, board.height);
   }
@@ -169,13 +144,9 @@ class Game {
     document.onKeyDown.listen((event) {
       if (timer.isActive) {
         if (event.keyCode == 37) pieceMoving('left');
-
         if (event.keyCode == 38) pieceMoving('rotate');
-
         if (event.keyCode == 39) pieceMoving('right');
-
         if (event.keyCode == 40) pieceMoving('down');
-
         if (event.keyCode == 32) while (pieceMoving('down')) {}
       }
     });
@@ -183,16 +154,12 @@ class Game {
 
   void start() {
     initializeCanvas();
-
     Element entryPoint = querySelector('#output');
 
     entryPoint.nodes.add(board);
     entryPoint.nodes.add(gameScore);
 
-    Timer timer = Timer.periodic(
-      Duration(milliseconds: 500),
-      updateGame,
-    );
+    Timer timer = Timer.periodic(Duration(milliseconds: 500), updateGame);
 
     currentBlock = getRandomPiece();
     handleKeyboard(timer);
